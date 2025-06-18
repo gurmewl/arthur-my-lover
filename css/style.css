@@ -1,339 +1,320 @@
-/* --------------------------------------------------
-   CSS-переменные для палитры: 
-   70% белого (#ffffff), 20% чёрного (#000000), 10% акцент (#BA3B46)
-   -------------------------------------------------- */
-:root {
-    --color-bg: #ffffff;
-    --color-text: #000000;
-    --color-accent: #BA3B46;
-    --color-accent-light: rgba(186, 59, 70, 0.1);
-    --transition-speed: 0.3s;
-}
+/* style.css — Артур Пирожков Fan Site */
+/* Author: gurmewl */
+/* Modern, responsive, and animated styles for index.html */
 
-/* Базовые сбросы */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* 1. Google Fonts */
+.roboto-flex-default {
+  font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
 }
-body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    scroll-behavior: smooth;
-    font-family: "Roboto Flex", sans-serif;
-    font-variation-settings:
-      "slnt" -9,
-      "wdth" 150,
-      "GRAD" 0,
-      "XOPQ" 52,
-      "XTRA" 564,
-      "YOPQ" 118,
-      "YTAS" 750,
-      "YTDE" -203,
-      "YTFI" 645,
-      "YTLC" 558,
-      "YTUC" 752;
-    position: relative;
-    cursor: none; /* скрываем системный курсор для custom */
-}
-
-/* Шрифтовые классы */
 .roboto-mono-base {
-    font-family: "Roboto Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+  font-family: 'Roboto Mono', monospace;
 }
 .roboto-flex-heading {
-    font-family: "Roboto Flex", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 800;
-    font-style: normal;
-    font-variation-settings:
-      "slnt" -9,
-      "wdth" 150,
-      "GRAD" 0,
-      "XOPQ" 52,
-      "XTRA" 564,
-      "YOPQ" 118,
-      "YTAS" 750,
-      "YTDE" -203,
-      "YTFI" 645,
-      "YTLC" 558,
-      "YTUC" 752;
+  font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
-/* Навигация */
-#navbar {
-    background-color: var(--color-bg);
-    transition: background-color var(--transition-speed);
+/* 2. General Reset & Base Styles */
+body {
+  background: #f8fafc;
+  color: #212529;
+  font-size: 1rem;
+  line-height: 1.7;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+}
+
+/* 3. Navbar */
+.navbar {
+  transition: box-shadow 0.3s;
+}
+.navbar .navbar-brand {
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 1.4rem;
 }
 .navbar .nav-link {
-    color: var(--color-text);
-    transition: color var(--transition-speed);
+  color: #212529;
+  font-weight: 500;
+  transition: color 0.2s;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  position: relative;
 }
+.navbar .nav-link.active,
 .navbar .nav-link:hover,
-.navbar .nav-link.active {
-    color: var(--color-accent);
-    font-weight: 600;
+.navbar .nav-link:focus {
+  color: #e44f6b;
+}
+.navbar .nav-link.active::after,
+.navbar .nav-link:hover::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: #e44f6b;
+  border-radius: 1px;
+  position: absolute;
+  left: 0;
+  bottom: -2px;
 }
 
-/* Hero Section */
-header#home {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
+/* 4. Hero Section */
+header.vh-100 {
+  min-height: 100vh;
+  background: #181818;
+  position: relative;
+  overflow: hidden;
+  padding-top: 56px; /* height of navbar */
 }
-header#home .video-bg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: auto;
-    height: 100%;
-    min-width: 100%;
-    min-height: 100%;
-    transform: translate(-50%, -50%);
-    object-fit: cover;
-    z-index: 1;
-    will-change: transform;
+.video-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
 }
-header#home .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 2;
+.overlay {
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: linear-gradient(120deg,rgba(0,0,0,0.45),rgba(36,12,44,0.65) 90%);
+  z-index: 2;
 }
-header#home .container {
-    position: relative;
-    z-index: 3;
+header .container {
+  z-index: 3;
 }
-header#home h1,
-header#home p {
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+header .display-4 {
+  font-size: 3rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+header .lead {
+  font-size: 1.3rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.13);
 }
 
-/* Кнопки */
+/* 5. Buttons & Ripple */
 .btn-accent {
-    background-color: var(--color-accent);
-    color: #ffffff;
-    border: 1px solid var(--color-accent);
-    transition: all var(--transition-speed) ease;
-    position: relative;
-    overflow: hidden;
-}
-.btn-accent:hover,
-.btn-outline-light:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.btn-outline-light {
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    background: transparent;
-    transition: all var(--transition-speed) ease;
-}
-.btn-outline-light:hover {
-    color: var(--color-accent);
-    background-color: #ffffff;
+  background: linear-gradient(90deg,#e44f6b 20%, #fcae47 100%);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 2px 16px 0 rgba(228,79,107,0.12);
+  transition: box-shadow .22s, background .22s;
 }
 
-/* Ripple effect */
+.btn-accent:hover, .btn-accent:focus {
+  background: linear-gradient(90deg,#fcae47 10%, #e44f6b 90%);
+  color: #fff;
+  box-shadow: 0 4px 24px 0 rgba(228,79,107,0.18);
+}
+.btn-outline-light.btn-ripple {
+  border: 2px solid #fff;
+  color: #fff;
+}
+.btn-outline-light.btn-ripple:hover, .btn-outline-light.btn-ripple:focus {
+  background: #fff;
+  color: #e44f6b;
+}
 .btn-ripple {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
-.btn-ripple::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    transform: scale(0);
-    background: rgba(255,255,255,0.7);
-    width: 100px;
-    height: 100px;
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-anim 0.6s linear;
+  background: rgba(255,255,255,0.4);
+  pointer-events: none;
+  z-index: 2;
+  width: 120px; height: 120px;
+  opacity: 1;
+}
+@keyframes ripple-anim {
+  to {
+    transform: scale(2.5);
     opacity: 0;
-    pointer-events: none;
-    transition: transform 0.6s ease, opacity 0.6s ease;
+  }
 }
 
-/* Glassmorphism-карточки */
+/* 6. Animations */
+.animate-from-bottom, .animate-from-top, .animate-from-left, .animate-from-right {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(.4,.08,.04,1), transform 0.8s cubic-bezier(.4,.08,.04,1);
+}
+.animate-from-top { transform: translateY(-40px);}
+.animate-from-left { transform: translateX(-40px);}
+.animate-from-right { transform: translateX(40px);}
+.in-view {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* 7. Card (Discography/Gallery) */
 .glass-card {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 1rem;
-    padding: 1rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  background: rgba(255,255,255,0.87);
+  border-radius: 1.25rem;
+  border: none;
+  backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 6px 36px 0 rgba(36,12,44,0.14);
+  transition: transform .18s cubic-bezier(.4,.08,.04,1), box-shadow .18s;
 }
 .glass-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 12px 48px 0 rgba(228,79,107,0.14), 0 1.5px 8px 0 rgba(0,0,0,0.11);
 }
 
-/* Hover-tilt effect для изображений */
+/* 8. Tilt Effect (for .hover-tilt) */
 .hover-tilt {
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.24s cubic-bezier(.4,.08,.04,1);
+  will-change: transform;
 }
 .hover-tilt:hover {
-    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.03);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: perspective(700px) rotateY(7deg) rotateX(3deg) scale(1.03);
 }
 
-/* Секции */
-section {
-    position: relative;
+/* 9. Audio Player */
+.audio-visualizer {
+  width: 100%;
+  height: 24px;
+  background: #f9f6fc;
+  border-radius: 6px;
+  margin-top: 0.6rem;
+  display: none; /* add JS for visualization if needed */
 }
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-.bg-white {
-    background-color: var(--color-bg) !important;
-}
-
-/* Галерея: ограничиваем высоту изображений */
-.carousel-item img {
-    max-height: 500px;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-.carousel-item img:hover {
-    transform: scale(1.02);
-}
-
-/* Аккордеон */
-.accordion-button::after {
-    font-size: 1.2rem;
-}
-
-/* Футер */
-footer {
-    background-color: var(--color-text);
-    color: var(--color-bg);
-}
-
-/* Анимации появления при скролле */
-/* Исходное состояние */
-.animate-from-bottom,
-.animate-from-left,
-.animate-from-right,
-.animate-from-top {
-    opacity: 0;
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-/* Конечное состояние: добавляется класс visible */
-.animate-from-bottom.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-.animate-from-bottom {
-    transform: translateY(20px);
-}
-.animate-from-top.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-.animate-from-top {
-    transform: translateY(-20px);
-}
-.animate-from-left.visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-.animate-from-left {
-    transform: translateX(-20px);
-}
-.animate-from-right.visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-.animate-from-right {
-    transform: translateX(20px);
-}
-
-/* Аудио-прогресс */
 .audio-progress {
-    height: 5px;
-    background-color: rgba(0, 0, 0, 0.1);
-    cursor: pointer;
+  height: 6px;
+  background: #e9e6f4;
+  border-radius: 4px;
+  overflow: hidden;
 }
 .audio-progress .progress-bar {
-    background-color: var(--color-accent);
+  background: linear-gradient(90deg, #e44f6b, #fcae47 70%);
+  transition: width .22s cubic-bezier(.4,.08,.04,1);
 }
 
-/* Audio visualizer canvas */
-.audio-visualizer {
-    width: 100%;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.05);
-    display: block;
+/* 10. Carousel Gallery */
+.carousel-inner {
+  border-radius: 1.1rem;
+  overflow: hidden;
+}
+.carousel-item img {
+  box-shadow: 0 2px 16px 0 rgba(36,12,44,0.07);
+  object-fit: cover;
+  min-height: 320px;
 }
 
-/* Back to Top Button */
+/* 11. Accordion (News) */
+.accordion-button {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.05rem;
+}
+.accordion-button:not(.collapsed) {
+  color: #fff;
+  background: linear-gradient(90deg, #e44f6b, #fcae47 100%);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+/* 12. Footer */
+footer.bg-black {
+  background: #181818 !important;
+}
+footer .container {
+  opacity: 0.95;
+}
+
+/* 13. Back-to-Top Button */
 #backToTop {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-accent);
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    z-index: 1000;
+  position: fixed;
+  bottom: 36px;
+  right: 36px;
+  z-index: 1002;
+  background: linear-gradient(90deg,#e44f6b 10%, #fcae47 90%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  display: none;
+  box-shadow: 0 4px 20px 0 rgba(228,79,107,0.15);
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  transition: background .19s, box-shadow .18s;
 }
-#backToTop.show {
-    opacity: 1;
-    visibility: visible;
+#backToTop:hover {
+  background: linear-gradient(90deg,#fcae47 10%, #e44f6b 90%);
+  box-shadow: 0 8px 32px 0 rgba(228,79,107,0.22);
 }
 
-/* Кастомный курсор */
+/* 14. Custom Cursor (Optional) */
 #custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 15px;
-    height: 15px;
-    border: 2px solid var(--color-accent);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease-out, background-color 0.3s ease;
-    z-index: 10000;
+  position: fixed;
+  z-index: 2000;
+  left: 0; top: 0;
+  width: 28px; height: 28px;
+  background: rgba(228,79,107,0.08);
+  border: 2px solid #e44f6b;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1);
+  transition: background 0.12s, border-color 0.12s, transform 0.13s;
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+}
+#custom-cursor.active {
+  background: rgba(252,174,71,0.2);
+  border-color: #fcae47;
+  transform: translate(-50%, -50%) scale(1.25);
+  opacity: 1;
 }
 
-/* Навигация: при скролле */
-.scrolled #navbar {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
+/* 15. Responsive Design */
+@media (max-width: 991px) {
+  .navbar .navbar-nav {
+    background: #fff;
+    box-shadow: 0 6px 24px 0 rgba(36,12,44,0.07);
+    border-radius: 0 0 12px 12px;
+    margin-top: 1.1rem;
+  }
 }
 
-/* Мобильная адаптация */
+@media (max-width: 768px) {
+  header .display-4 { font-size: 2.2rem; }
+  .carousel-item img { min-height: 180px; }
+  .glass-card { border-radius: 0.75rem; }
+}
+
 @media (max-width: 576px) {
-    header#home h1 {
-        font-size: 2rem;
-    }
-    header#home p.lead {
-        font-size: 1rem;
-    }
+  .navbar .navbar-brand { font-size: 1.1rem; }
+  .glass-card { margin-bottom: 1.25rem; }
+  .carousel-inner { border-radius: 0.6rem; }
+  #backToTop { width: 44px; height: 44px; font-size: 1.4rem; }
+  #custom-cursor { width: 18px; height: 18px; }
 }
 
-/* Плавный переход ссылок */
+/* 16. Miscellaneous */
+::selection {
+  background: #e44f6b33;
+}
 a {
-    transition: color var(--transition-speed);
+  color: #e44f6b;
+  text-decoration: none;
+  transition: color .16s;
+}
+a:hover, a:focus {
+  color: #fcae47;
+  text-decoration: underline;
 }
 
-/* Модальное видео */
-.modal-content video {
-    max-height: 80vh;
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.7s;
+}
+img[loading="lazy"].loaded {
+  opacity: 1;
 }
