@@ -1,311 +1,183 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // 1) Intersection Observer для анимаций появления
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-    };
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
+// script.js — Артур Пирожков Fan Site Custom JS
+// Author: gurmewl
+// Description: Handles UI interactions, animations, audio controls, and accessibility
 
-    document.querySelectorAll('.animate-from-bottom, .animate-from-left, .animate-from-right, .animate-from-top')
-      .forEach(el => {
-        observer.observe(el);
+document.addEventListener('DOMContentLoaded', () => {
+  // Helper: Safe querySelector
+  function $(selector, scope = document) {
+    return scope.querySelector(selector);
+  }
+  function $all(selector, scope = document) {
+    return Array.from(scope.querySelectorAll(selector));
+  }
+
+  // 1. Navbar: Collapse on link click (mobile)
+  const navbarCollapse = $('#navbarNav');
+  $all('.navbar-nav .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navbarCollapse);
+        bsCollapse.hide();
+      }
     });
+  });
 
-    // 2) Navbar: подсветка активного пункта при скролле
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('section, header#home');
-
-    function onScrollNav() {
-        const scrollPos = window.scrollY + window.innerHeight / 3;
-        sections.forEach(section => {
-            const id = section.getAttribute('id');
-            if (!id) return;
-            if (section.offsetTop <= scrollPos && (section.offsetTop + section.offsetHeight) > scrollPos) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('href') === '#' + id);
-                });
-            }
-        });
-    }
-    window.addEventListener('scroll', onScrollNav);
-    onScrollNav();
-
-    // 3) Navbar фон при скролле
-    window.addEventListener('scroll', function () {
-        if (window.scrollY > 50) {
-            document.body.classList.add('scrolled');
-        } else {
-            document.body.classList.remove('scrolled');
-        }
+  // 2. Animate Elements on Scroll
+  function animateOnScroll() {
+    $all('.animate-from-bottom, .animate-from-top, .animate-from-left, .animate-from-right').forEach(el => {
+      if (isElementInViewport(el)) {
+        el.classList.add('in-view');
+      }
     });
+  }
+  function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top < window.innerHeight - 100 && rect.bottom > 100
+    );
+  }
+  window.addEventListener('scroll', animateOnScroll);
+  animateOnScroll();
 
-    // 4) Плавный скролл при клике на navbar
-    navLinks.forEach(link => {
-        if (link.hash) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.hash);
-                if (target) {
-                    window.scrollTo({
-                        top: target.offsetTop - 70,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        }
+  // 3. Smooth Scrolling for Anchor Links
+  $all('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href').substring(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
     });
+  });
 
-    // 5) Parallax-эффект для видео-фона
-    const videoBg = document.querySelector('.video-bg');
+  // 4. "Back to Top" Button
+  const backToTop = $('#backToTop');
+  if (backToTop) {
     window.addEventListener('scroll', () => {
-        if (videoBg) {
-            const scrollTop = window.scrollY;
-            // смещаем фон видео чуть вниз по мере скролла
-            videoBg.style.transform = `translate(-50%, -50%) translateY(${scrollTop * 0.2}px)`;
+      backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // 5. Bootstrap Tooltips
+  if (window.bootstrap) {
+    $all('[data-bs-toggle="tooltip"]').forEach(el => {
+      new bootstrap.Tooltip(el);
+    });
+  }
+
+  // 6. Audio Player Controls
+  $all('.play-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const audioId = this.getAttribute('data-audio-id');
+      const audio = document.getElementById(audioId);
+      if (!audio) return;
+      // Pause other audios
+      $all('audio').forEach(a => {
+        if (a !== audio) a.pause();
+      });
+      // Play or pause current
+      if (audio.paused) {
+        audio.play();
+        this.innerHTML = '<i class="bi bi-pause-fill"></i> Пауза';
+      } else {
+        audio.pause();
+        this.innerHTML = '<i class="bi bi-play-fill"></i> Воспроизвести';
+      }
+      // Reset other play buttons
+      $all('.play-btn').forEach(otherBtn => {
+        if (otherBtn !== this) {
+          otherBtn.innerHTML = '<i class="bi bi-play-fill"></i> Воспроизвести';
         }
+      });
     });
+  });
 
-    // 6) Tooltip на иконках соцсетей
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach(el => {
-        new bootstrap.Tooltip(el);
+  // 7. Audio Progress Bar (and reset on end)
+  $all('audio').forEach(audio => {
+    const progress = $(`.audio-progress[data-audio-id="${audio.id}"] .progress-bar`);
+    audio.addEventListener('timeupdate', () => {
+      if (progress) {
+        progress.style.width = `${(audio.currentTime / audio.duration) * 100 || 0}%`;
+      }
     });
+    audio.addEventListener('ended', () => {
+      if (progress) progress.style.width = '0%';
+      const playBtn = $(`.play-btn[data-audio-id="${audio.id}"]`);
+      if (playBtn) playBtn.innerHTML = '<i class="bi bi-play-fill"></i> Воспроизвести';
+    });
+  });
 
-    // 7) Back to Top Button
-    const backToTopBtn = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 500) {
-            backToTopBtn.classList.add('show');
-        } else {
-            backToTopBtn.classList.remove('show');
-        }
-    });
-    backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // 8) Custom cursor
-    const customCursor = document.getElementById('custom-cursor');
+  // 8. Custom Cursor (Optional)
+  const cursor = $('#custom-cursor');
+  if (cursor) {
     document.addEventListener('mousemove', e => {
-        customCursor.style.top = e.clientY + 'px';
-        customCursor.style.left = e.clientX + 'px';
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
     });
-    // Увеличение курсора при hover на интерактивных элементах
-    const interactiveSelectors = ['a', 'button', '.btn', '.nav-link'];
-    interactiveSelectors.forEach(sel => {
-        document.querySelectorAll(sel).forEach(elem => {
-            elem.addEventListener('mouseenter', () => {
-                customCursor.style.transform = 'translate(-50%, -50%) scale(2)';
-                customCursor.style.backgroundColor = 'rgba(186,59,70,0.2)';
-            });
-            elem.addEventListener('mouseleave', () => {
-                customCursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                customCursor.style.backgroundColor = 'transparent';
-            });
-        });
+    // Add interactive effect for buttons/links
+    $all('a, button, .btn').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
     });
+  }
 
-    // 9) Ripple effect на кнопках
-    document.querySelectorAll('.btn-ripple').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            const rect = this.getBoundingClientRect();
-            const ripple = document.createElement('span');
-            const size = Math.max(rect.width, rect.height);
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-            ripple.style.position = 'absolute';
-            ripple.style.borderRadius = '50%';
-            ripple.style.backgroundColor = 'rgba(255,255,255,0.7)';
-            ripple.style.transform = 'scale(0)';
-            ripple.style.pointerEvents = 'none';
-            ripple.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
-            this.appendChild(ripple);
-            requestAnimationFrame(() => {
-                ripple.style.transform = 'scale(1)';
-                ripple.style.opacity = '0';
-            });
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
+  // 9. Ripple Effect for Buttons
+  $all('.btn-ripple').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      const circle = document.createElement('span');
+      circle.className = 'ripple';
+      const rect = btn.getBoundingClientRect();
+      circle.style.left = `${e.clientX - rect.left}px`;
+      circle.style.top = `${e.clientY - rect.top}px`;
+      this.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
     });
+  });
 
-    // 10) Аудиоплеер с прогресс-баром и визуализатором
-    const audioElements = document.querySelectorAll('audio');
-    const playButtons = document.querySelectorAll('.play-btn');
-    let currentAudio = null;
-    let currentButton = null;
-
-    // Для визуализатора: создаём AudioContext и Analyser при первом play
-    const audioContextMap = new Map(); // key: audioEl, value: {context, source, analyser, dataArray, canvas, canvasCtx, animationId}
-
-    playButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const audioId = this.getAttribute('data-audio-id');
-            const audioEl = document.getElementById(audioId);
-            if (!audioEl) return;
-
-            // Если другой трек играет — остановим его и очистим визуализатор
-            if (currentAudio && currentAudio !== audioEl) {
-                stopAudio(currentAudio);
-            }
-            // Переключаем play/pause
-            if (audioEl.paused) {
-                playAudio(audioEl, this);
-            } else {
-                stopAudio(audioEl);
-            }
-        });
+  // 10. Modal Video Pause on Close
+  const promoModal = $('#promoModal');
+  if (promoModal) {
+    promoModal.addEventListener('hidden.bs.modal', () => {
+      const video = $('#promoModalVideo');
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
     });
+  }
 
-    // Функция playAudio
-    function playAudio(audioEl, btnElem) {
-        audioEl.play();
-        btnElem.innerHTML = '<i class="bi bi-pause-fill"></i> Пауза';
-        currentAudio = audioEl;
-        currentButton = btnElem;
-
-        setupVisualizer(audioEl);
-    }
-
-    // Функция stopAudio
-    function stopAudio(audioEl) {
-        audioEl.pause();
-        // Найдём кнопку для этого аудио:
-        const btn = document.querySelector(`.play-btn[data-audio-id="${audioEl.id}"]`);
-        if (btn) btn.innerHTML = '<i class="bi bi-play-fill"></i> Воспроизвести';
-        // Остановим визуализацию
-        teardownVisualizer(audioEl);
-        // Сброс прогресса (можно оставить на текущем месте, но обычно сбрасывают)
-        //audioEl.currentTime = 0; // если нужно сбрасывать
-    }
-
-    // Прогресс-бар и клики по нему
-    audioElements.forEach(audioEl => {
-        const audioId = audioEl.getAttribute('id');
-        const progressContainer = document.querySelector(`.audio-progress[data-audio-id="${audioId}"]`);
-        const progressBar = progressContainer ? progressContainer.querySelector('.progress-bar') : null;
-        if (!progressBar || !progressContainer) return;
-
-        audioEl.addEventListener('timeupdate', () => {
-            if (audioEl.duration) {
-                const percent = (audioEl.currentTime / audioEl.duration) * 100;
-                progressBar.style.width = percent + '%';
-            }
-        });
-        audioEl.addEventListener('ended', () => {
-            teardownVisualizer(audioEl);
-            if (audioEl === currentAudio) {
-                const btn = document.querySelector(`.play-btn[data-audio-id="${audioId}"]`);
-                if (btn) btn.innerHTML = '<i class="bi bi-play-fill"></i> Воспроизвести';
-                currentAudio = null;
-                currentButton = null;
-            }
-            // Сброс прогресса
-            progressBar.style.width = '0%';
-        });
-        // Перемотка по клику
-        progressContainer.addEventListener('click', (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const width = rect.width;
-            const newTime = (clickX / width) * audioEl.duration;
-            audioEl.currentTime = newTime;
-        });
+  // 11. Gallery Carousel (autoplay, optional)
+  const galleryCarousel = $('#carouselGallery');
+  if (galleryCarousel && window.bootstrap) {
+    const carousel = bootstrap.Carousel.getOrCreateInstance(galleryCarousel, {
+      interval: 6000,
+      ride: false,
     });
+    // Optional: Auto-pause on mouseenter
+    galleryCarousel.addEventListener('mouseenter', () => carousel.pause());
+    galleryCarousel.addEventListener('mouseleave', () => carousel.cycle());
+  }
 
-    // Функция установки визуализатора
-    function setupVisualizer(audioEl) {
-        if (!window.AudioContext && !window.webkitAudioContext) {
-            return;
-        }
-        if (audioContextMap.has(audioEl)) {
-            // Уже создан, запустим отрисовку
-            const obj = audioContextMap.get(audioEl);
-            if (!obj.animationId) {
-                drawVisualizer(obj);
-            }
-            return;
-        }
-        // Создаём новый AudioContext
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
-        const source = audioCtx.createMediaElementSource(audioEl);
-        const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-
-        // Canvas для визуализации
-        const canvas = document.querySelector(`.audio-visualizer[data-audio-id="${audioEl.id}"]`);
-        if (!canvas) return;
-        const canvasCtx = canvas.getContext('2d');
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        const obj = { audioCtx, source, analyser, dataArray, canvas, canvasCtx, animationId: null };
-        audioContextMap.set(audioEl, obj);
-        drawVisualizer(obj);
+  // 12. Keyboard Accessibility Improvements
+  // Escape closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      $all('.modal.show').forEach(modalEl => {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.hide();
+      });
     }
+  });
 
-    // Функция отрисовки визуализатора
-    function drawVisualizer(obj) {
-        const { analyser, dataArray, canvas, canvasCtx } = obj;
-        const WIDTH = canvas.width = canvas.clientWidth;
-        const HEIGHT = canvas.height = canvas.clientHeight;
-        const bufferLength = analyser.frequencyBinCount;
+  // 13. Prevent JS errors for missing elements (defensive coding throughout)
+  // All selectors are checked for null before being used above.
 
-        function draw() {
-            obj.animationId = requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
-            canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-            const barWidth = (WIDTH / bufferLength) * 2.5;
-            let x = 0;
-            for (let i = 0; i < bufferLength; i++) {
-                const barHeight = (dataArray[i] / 255) * HEIGHT;
-                canvasCtx.fillStyle = 'rgba(186,59,70,0.7)';
-                canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-                x += barWidth + 1;
-            }
-        }
-        draw();
-    }
-
-    // Остановка визуализатора
-    function teardownVisualizer(audioEl) {
-        const obj = audioContextMap.get(audioEl);
-        if (obj) {
-            if (obj.animationId) {
-                cancelAnimationFrame(obj.animationId);
-                obj.animationId = null;
-            }
-            // Можно очистить canvas
-            const { canvas, canvasCtx } = obj;
-            if (canvasCtx) {
-                canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            // Не закрываем AudioContext, оставляем для дальнейшего reuse
-        }
-    }
-
-    // 11) Остановка модального видео при закрытии
-    const promoModal = document.getElementById('promoModal');
-    if (promoModal) {
-        promoModal.addEventListener('hidden.bs.modal', function () {
-            const video = document.getElementById('promoModalVideo');
-            if (video) {
-                video.pause();
-                video.currentTime = 0;
-            }
-        });
-    }
+  // 14. Optional: Lazy loading images (modern browsers only)
+  $all('img').forEach(img => {
+    img.loading = 'lazy';
+  });
 });
