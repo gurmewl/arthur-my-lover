@@ -1,0 +1,22 @@
+fan-site-artur-pirozhkov/
+│
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── script.js
+├── assets/
+│   ├── images/
+│   │   ├── hero.jpg            # крупное изображение для шапки
+│   │   ├── portrait1.jpg       # портрет Артура
+│   │   ├── portrait2.jpg       # ещё фото
+│   │   ├── gallery1.jpg        # фото для галереи
+│   │   ├── gallery2.jpg
+│   │   └── gallery3.jpg
+│   ├── audio/
+│   │   ├── zacepila.mp3        # «Зацепила»
+│   │   ├── tudym-sudym.mp3     # «#туДЫМ-сюДЫМ»
+│   │   └── kak-chelentano.mp3  # «#КакЧелентано»
+│   └── video/
+│       └── promo.mp4           # опционально: промо-видео или клип (по желанию)
+└── README.md                   # инструкции, ссылки на источники, список новостей
